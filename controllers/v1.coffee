@@ -58,10 +58,10 @@ app.post "/v1/users", (req, res, next) ->
    if not body = req.body then next(new InvalidArgumentError("Missing body"))
 
    User.create
-      email: body.email
+      email: body.email.trim()
       password: crypt.hashPassword body.password
-      first_name: body.first_name
-      last_name: body.last_name
+      first_name: body.first_name.trim()
+      last_name: body.last_name.trim()
       refresh_token: crypt.generateRefreshToken()
       profile_image_url: ""
    , (err, user) ->
@@ -106,7 +106,7 @@ app.post "/v1/reset", (req, res, next) ->
 app.put "/v1/users/:user_id", auth.rookieStatus, (req, res, next) ->
    user_id = req.params.user_id
    email = req.body.email?.trim()
-   pw = req.body.password?.trim()
+   pw = req.body.password
 
    next(new InvalidArgumentError("Required: email and/or password")) unless (email or pw)
 
