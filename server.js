@@ -7,7 +7,8 @@ Environmental variables
 
 require("coffee-script");
 app = require("./controllers/host.coffee");
-server = process.env.NODE_ENV == "production" ? require("https") : require("http");
+// server = process.env.NODE_ENV == "production" ? require("https") : require("http");
+server = require("http");
 port = process.env.PORT || 2200;
 
 server.createServer(app).listen(port, function () {

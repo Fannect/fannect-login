@@ -6,6 +6,7 @@ RestError = require "../common/errors/RestError"
 RedisError = require "../common/errors/RedisError"
 InvalidArgumentError = require "../common/errors/InvalidArgumentError"
 NotAuthorizedError = require "../common/errors/NotAuthorizedError"
+async = require "async"
 
 app = module.exports = express()
 
