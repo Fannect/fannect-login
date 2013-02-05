@@ -67,11 +67,7 @@ app.get "/twitter/callback/:access_token", (req, res, next) ->
 
          async.parallel
             redis: (done) -> auth.setUser req.query.access_token, user, done
-            mongo: (done) -> 
-               User.update user._id, {
-                  "oauth.twitter.access_token": oauth_access_token
-                  "oauth.twitter.access_token_secret": oauth_access_token_secret
-               }, done
+            mongo: (done) -> User.update {_id: user._id}, { twitter: user.twitter }, done
          , (err) ->
             return next(new RestError(err)) if err 
             res.redirect "/twitter/success"
