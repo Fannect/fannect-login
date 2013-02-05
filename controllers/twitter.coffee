@@ -9,7 +9,7 @@ NotAuthorizedError = require "../common/errors/NotAuthorizedError"
 async = require "async"
 User = require "../common/models/User"
 
-twitter_redirect = process.env.TWITTER_CALLBACK or "http://localhost:2200/twitter/callback"
+twitter_redirect = process.env.TWITTER_CALLBACK or "http://localhost:2200"
 
 app = module.exports = express()
 
@@ -20,7 +20,7 @@ app.get "/twitter", auth.rookieStatus, (req, res, next) ->
       "gFPvxERVpBhfzZh5MNZhQ",
       "xAw41NrcuHoFmdtl45t8tDMgANppe94QnGO0Np3Gak",
       "1.0",
-      "http://localhost:2200/twitter/callback/#{req.query.access_token}",
+      "#{twitter_redirect}/twitter/callback/#{req.query.access_token}",
       "HMAC-SHA1")
    
    oa.getOAuthRequestToken (err, oauth_token, oauth_token_secret, results) ->
@@ -47,7 +47,7 @@ app.get "/twitter/callback/:access_token", (req, res, next) ->
          "gFPvxERVpBhfzZh5MNZhQ",
          "xAw41NrcuHoFmdtl45t8tDMgANppe94QnGO0Np3Gak",
          "1.0",
-         "#{twitter_redirect}/#{req.params.access_token}",
+         "#{twitter_redirect}/twitter/callback/#{req.query.access_token}",
          "HMAC-SHA1")
 
       verifier = req.query.oauth_verifier
