@@ -74,7 +74,7 @@ app.get "/twitter/callback/:access_token", (req, res, next) ->
                }, done
          , (err) ->
             return next(new RestError(err)) if err 
-            res.redirect "forge:///linkAccounts.html"
+            res.redirect "/twitter/success"
 
 
 
