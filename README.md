@@ -8,6 +8,7 @@ This is the source for the Fannect login API.
 * REDIS_URL
 * SENDGRID_USERNAME
 * SENDGRID_PASSWORD
+* TWITTER_CALLBACK
 
 # REST Schema
 This is based on [this video](http://blog.apigee.com/detail/restful_api_design) by apigee
