@@ -1,14 +1,13 @@
 express = require "express"
 mongoose = require "mongoose"
 User = require "../common/models/User"
-crypt = require "../common/utils/crypt"
-redis = require("../common/utils/redis").client
 InvalidArgumentError = require "../common/errors/InvalidArgumentError"
 NotAuthorizedError = require "../common/errors/NotAuthorizedError"
 MongoError = require "../common/errors/MongoError"
 RedisError = require "../common/errors/RedisError"
 sendgrid = new (require("sendgrid-web"))({ user: "fannect", key: "1Billion!" })
 auth = require "../common/middleware/authenticate"
+crypt = require "../common/utils/crypt"
 
 app = module.exports = express()
 
@@ -31,7 +30,7 @@ app.post "/v1/token", (req, res, next) ->
       user = user.toObject()
 
       refresh_token = user.refresh_token
-      createAccessToken user, (err, access_token) ->
+      auth.createAccessToken user, (err, access_token) ->
          return next(err) if err
          
          user.access_token = access_token
@@ -48,7 +47,7 @@ app.put "/v1/token", (req, res, next) ->
       return next(new MongoError(err)) if err
       return next(new NotAuthorizedError("Invalid refresh_token")) if not user
       
-      createAccessToken user, (err, access_token) ->
+      auth.createAccessToken user, (err, access_token) ->
          return next(err) if err
          
          res.json
@@ -71,8 +70,7 @@ app.post "/v1/users", (req, res, next) ->
       delete user.password
       delete user.__v
 
-      refresh_token = user.refresh_token
-      createAccessToken user, (err, access_token) ->
+      auth.createAccessToken user, (err, access_token) ->
          return next(new MongoError(err)) if err
       
          user.access_token = access_token
@@ -124,21 +122,5 @@ app.put "/v1/users/:user_id", auth.rookieStatus, (req, res, next) ->
          res.json
             status: "success"
             refresh_token: update.refresh_token
-
-createAccessToken = (user, done) ->
-   # Create new access_token and store
-   access_token = crypt.generateAccessToken()
-   redis.setnx access_token, JSON.stringify(user), (err, result) ->
-      return done(new RedisError(err)) if err
-      
-      if result == 0
-         createAccessToken(user, done)
-      else
-         # Set expiration
-         redis.expire access_token, 1800
-
-         # If access_token already exsits then try again
-         done null, access_token
-
 
 

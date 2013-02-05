@@ -19,7 +19,8 @@
       "mongoose": "3.5.4",
       "mongoose-types": "1.0.3",
       "redis": "0.8.2",
-      "sendgrid-web": "0.0.4"
+      "sendgrid-web": "0.0.4",
+      "oauth": "0.9.8"
    },
    "devDependencies": {
       "mocha": "1.7.4",
