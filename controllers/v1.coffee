@@ -22,7 +22,7 @@ app.post "/v1/token", (req, res, next) ->
 
    User
    .findOne({ "email": email, "password", password })
-   .select("_id email first_name last_name refresh_token birth gender twitter")
+   .select("_id email first_name last_name refresh_token birth gender twitter invites")
    .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
@@ -44,7 +44,7 @@ app.put "/v1/token", (req, res, next) ->
    
    User
    .findOne({ "refresh_token": req.body.refresh_token })
-   .select("_id email first_name last_name refresh_token birth gender twitter")
+   .select("_id email first_name last_name refresh_token birth gender twitter invites")
    .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
