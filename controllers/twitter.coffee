@@ -33,7 +33,7 @@ app.get "/twitter", auth.rookieStatus, (req, res, next) ->
       auth.updateUser req.query.access_token, req.user, (err) ->
 
          return next(new RedisError(err)) if err
-         res.redirect("https://twitter.com/oauth/authenticate?oauth_token=#{oauth_token}")
+         res.redirect("https://twitter.com/oauth/authenticate?oauth_token=#{oauth_token}")   
 
 app.get "/twitter/callback/:access_token", (req, res, next) ->
    return next(new NotAuthorizedError("User denied access")) if req.query.denied
@@ -72,7 +72,10 @@ app.get "/twitter/callback/:access_token", (req, res, next) ->
             return next(new RestError(err)) if err 
             res.redirect "/twitter/success"
 
-
+app.del "/twitter", auth.rookieStatus, (req, res, next) ->
+   User.update { _id: req.user._id }, { twitter: null }, (err) ->
+      return next(new MongoError(err)) if err
+      res.json status: "success"
 
 
 
