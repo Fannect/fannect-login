@@ -73,7 +73,12 @@ app.get "/twitter/callback/:access_token", (req, res, next) ->
             res.redirect "/twitter/success"
 
 app.del "/twitter", auth.rookieStatus, (req, res, next) ->
-   User.update { _id: req.user._id }, { twitter: null }, (err) ->
+   delete req.user.twitter
+  
+   async.parallel
+      redis: (done) -> auth.updateUser req.query.access_token, req.user, done
+      mongo: (done) -> User.update { _id: req.user._id }, { twitter: null }, done
+   , (err) ->
       return next(new MongoError(err)) if err
       res.json status: "success"
 
