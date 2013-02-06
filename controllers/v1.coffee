@@ -22,17 +22,19 @@ app.post "/v1/token", (req, res, next) ->
 
    User
    .findOne({ "email": email, "password", password })
-   .select("_id email first_name last_name refresh_token birth gender")
+   .select("_id email first_name last_name refresh_token birth gender twitter")
+   .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
       return next(new NotAuthorizedError("Invalid credentials")) if not user
-      
-      user = user.toObject()
 
       refresh_token = user.refresh_token
       auth.createAccessToken user, (err, access_token) ->
          return next(err) if err
          
+         # Set if user has connected twitter
+         user.twitter = if user.twitter?.user_id then true else false
+
          user.access_token = access_token
          res.json user
 
@@ -42,7 +44,8 @@ app.put "/v1/token", (req, res, next) ->
    
    User
    .findOne({ "refresh_token": req.body.refresh_token })
-   .select("_id email first_name last_name refresh_token birth gender")
+   .select("_id email first_name last_name refresh_token birth gender twitter")
+   .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
       return next(new NotAuthorizedError("Invalid refresh_token")) if not user
@@ -50,8 +53,11 @@ app.put "/v1/token", (req, res, next) ->
       auth.createAccessToken user, (err, access_token) ->
          return next(err) if err
          
-         res.json
-            access_token: access_token
+         # Set if user has connected twitter
+         user.twitter = if user.twitter?.user_id then true else false
+
+         user.access_token = access_token
+         res.json user
          
 app.post "/v1/users", (req, res, next) ->
    if not body = req.body then next(new InvalidArgumentError("Missing body"))
