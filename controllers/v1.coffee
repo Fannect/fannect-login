@@ -39,9 +39,8 @@ app.post "/v1/token", (req, res, next) ->
          res.json user
 
 # Refresh access_token with refresh_token
-app.put "/v1/token", (req, res, next) ->
-   next(new InvalidArgumentError("Required: refresh_token")) unless req.body.refresh_token
-   
+getNewAccessToken = (req, res, next) ->
+   return next(new InvalidArgumentError("Required: refresh_token")) unless req.body.refresh_token
    User
    .findOne({ "refresh_token": req.body.refresh_token })
    .select("_id email first_name last_name refresh_token birth gender twitter invites")
@@ -58,7 +57,10 @@ app.put "/v1/token", (req, res, next) ->
 
          user.access_token = access_token
          res.json user
-         
+
+app.put "/v1/token", getNewAccessToken
+app.post "/v1/token/update", getNewAccessToken
+   
 app.post "/v1/users", (req, res, next) ->
    if not body = req.body then next(new InvalidArgumentError("Missing body"))
 
@@ -107,7 +109,7 @@ app.post "/v1/reset", (req, res, next) ->
                res.json
                   status: "success"
 
-app.put "/v1/users/:user_id", auth.rookieStatus, (req, res, next) ->
+updateUser = (req, res, next) ->
    user_id = req.params.user_id
    email = req.body.email?.trim()
    pw = req.body.password
@@ -128,5 +130,10 @@ app.put "/v1/users/:user_id", auth.rookieStatus, (req, res, next) ->
          res.json
             status: "success"
             refresh_token: update.refresh_token
+
+app.put "/v1/users/:user_id", auth.rookieStatus, updateUser
+app.post "/v1/users/:user_id/update", auth.rookieStatus, updateUser
+
+
 
 
