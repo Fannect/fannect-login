@@ -5,9 +5,12 @@ InvalidArgumentError = require "../common/errors/InvalidArgumentError"
 NotAuthorizedError = require "../common/errors/NotAuthorizedError"
 MongoError = require "../common/errors/MongoError"
 RedisError = require "../common/errors/RedisError"
-sendgrid = new (require("sendgrid-web"))({ user: "fannect", key: "1Billion!" })
 auth = require "../common/middleware/authenticate"
 crypt = require "../common/utils/crypt"
+sendgrid = new (require("sendgrid-web"))({ 
+   user: process.env.SENDGRID_USER or "fannect", 
+   key: process.env.SENDGRID_PASSWORD or "1Billion!" 
+})
 
 app = module.exports = express()
 
