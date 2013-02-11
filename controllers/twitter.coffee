@@ -127,7 +127,7 @@ app.get "/v1/twitter/callback/:access_token", (req, res, next) ->
             mongo: (done) -> User.update {_id: user._id}, { twitter: user.twitter }, done
          , (err) ->
             return next(new RestError(err)) if err 
-            res.redirect "/v1/twitter/done?status='success'"
+            res.redirect "/v1/twitter/done?status=success"
 
 
 deleteTwitter = (req, res, next) ->
