@@ -145,6 +145,14 @@ app.del "/twitter", auth.rookieStatus, deleteTwitter
 app.post "/v1/twitter/delete", auth.rookieStatus, deleteTwitter
 app.del "/v1/twitter", auth.rookieStatus, deleteTwitter
 
+twitterDone = (req, res, next) ->
+   if req.query?.status == "success"
+      res.send "Successfully linked Twitter account!"
+   else
+      res.send "Failed to link Twitter account!"
+
+app.get "/twitter/success", twitterDone
+app.get "/v1/twitter/done", twitterDone
    
 
 
