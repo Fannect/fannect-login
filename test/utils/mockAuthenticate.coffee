@@ -12,9 +12,17 @@ passthrough = (req, res, next) ->
    }
    next()
 
+appPassThrough = (req, res, next) ->
+   req.app = {
+      name: "Test App"
+   }
+   next()
+
 auth.rookieStatus = passthrough
 auth.subStatus = passthrough
 auth.starterStatus = passthrough
 auth.allstarStatus = passthrough
 auth.mvpStatus = passthrough
 auth.hofStatus = passthrough
+auth.app.managerStatus = appPassThrough
+auth.app.ownerStatus = appPassThrough

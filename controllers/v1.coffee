@@ -18,7 +18,7 @@ app = module.exports = express()
 app.post "/v1/token", (req, res, next) ->
    # Validate before querying
    if not req.body?.email or not req.body?.password
-      next(new InvalidArgumentError("Required: email, password"))
+      return next(new InvalidArgumentError("Required: email, password"))
    
    email = req.body.email?.toLowerCase()
    password = crypt.hashPassword(req.body.password)
@@ -136,6 +136,8 @@ updateUser = (req, res, next) ->
 
 app.put "/v1/users/:user_id", auth.rookieStatus, updateUser
 app.post "/v1/users/:user_id/update", auth.rookieStatus, updateUser
+
+app.use require "./v1/app"
 
 
 

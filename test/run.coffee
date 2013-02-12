@@ -30,8 +30,8 @@ describe "Fannect Login", () ->
          User = require "../common/models/User"
          redis = require("../common/utils/redis").client
          dbSetup = require "./utils/dbSetup"
-         dbSetup.unload () -> dbSetup.load data_standard, done
-   after (done) -> dbSetup.unload done
+         dbSetup.unload data_standard, () -> dbSetup.load data_standard, done
+   after (done) -> dbSetup.unload data_standard, done
 
    describe "/v1/token", () ->
       describe "POST", () ->
@@ -193,8 +193,8 @@ describe "Fannect Login", () ->
 
    describe "/v1/reset", () ->
       before (done) ->
-          dbSetup.unload () -> dbSetup.load data_standard, done
-      after (done) -> dbSetup.unload done
+          dbSetup.unload data_standard, () -> dbSetup.load data_standard, done
+      after (done) -> dbSetup.unload data_standard, done
 
       describe "POST", () ->
          it "should set to new password", (done) ->
@@ -220,6 +220,56 @@ describe "Fannect Login", () ->
             , (err, resp, body) ->
                return done(err) if err
                body.status.should.equal("fail")
+               done()
+
+
+   describe "/v1/apps", () ->
+      describe "POST", () ->
+         before (done) ->
+            context = @
+            request
+               url: "#{context.host}/v1/apps"
+               method: "POST"
+               json: 
+                  name: "Another Test App"
+                  role: "owner"
+            , (err, resp, body) ->
+               return done(err) if err
+               context.body = body
+               done() 
+
+         it "should return created app", () ->
+            context = @
+            context.body.client_id.should.be.ok
+            context.body.name.should.equal("Another Test App")
+            context.body.client_secret.should.be.ok
+           
+
+   describe "/v1/apps/token", () ->
+      describe "POST", () ->
+         before (done) ->
+            context = @
+            request
+               url: "#{context.host}/v1/apps/token"
+               method: "POST"
+               json: 
+                  client_id: "clientid"
+                  client_secret: "clientsecret"
+            , (err, resp, body) ->
+               return done(err) if err
+               context.body = body
+               done() 
+
+         it "should retrieve access_token", () ->
+            context = @
+            context.body.access_token.should.be.ok
+
+         it "should access_token to redis", (done) ->
+            context = @
+            redis.get context.body.access_token, (err, app) ->
+               return done(err) if err
+               app = JSON.parse(app)
+               app.name.should.equal("Test App")
                done()
 
 
