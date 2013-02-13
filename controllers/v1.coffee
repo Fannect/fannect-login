@@ -25,7 +25,7 @@ app.post "/v1/token", (req, res, next) ->
 
    User
    .findOne({ "email": email, "password", password })
-   .select("_id email first_name last_name refresh_token birth gender twitter invites")
+   .select("_id email first_name last_name refresh_token birth gender twitter invites reload_stream")
    .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
@@ -46,7 +46,7 @@ getNewAccessToken = (req, res, next) ->
    return next(new InvalidArgumentError("Required: refresh_token")) unless req.body.refresh_token
    User
    .findOne({ "refresh_token": req.body.refresh_token })
-   .select("_id email first_name last_name refresh_token birth gender twitter invites")
+   .select("_id email first_name last_name refresh_token birth gender twitter invites reload_stream")
    .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
