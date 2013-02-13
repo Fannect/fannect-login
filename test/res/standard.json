@@ -13,6 +13,7 @@
     ],
     "apps": [
         {
+            "_id": "5102b17168a0c8f70c000104",
             "name": "Test App",
             "client_id": "clientid",
             "client_secret": "clientsecret",

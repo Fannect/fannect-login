@@ -20,8 +20,9 @@ module.exports =
       app_ids = if obj.apps then (t._id for t in obj.apps) else []
       async.parallel [
          (done) -> User.remove({_id: { $in: user_ids }}, done)
-         (done) -> App.remove({_id: { $in: app_ids }}, done)
          (done) -> User.remove({email: "imatester@fannect.me"}, done)
+         (done) -> App.remove({_id: { $in: app_ids }}, done)
+         (done) -> App.remove({name: "Another Test App"}, done)
       ], -> cb()
 
 
