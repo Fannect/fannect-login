@@ -20,7 +20,7 @@ app.post "/v1/apps/token", (req, res, next) ->
 
    App.findOne { client_id: client_id, client_secret: client_secret }, (err, app) ->
       return next(new MongoError(err)) if err
-      return next(new NotAuthorizedError("Invalid client_id and client_secret")) if not app
+      return next(new NotAuthorizedError("Invalid client_id and client_secret")) unless app
       app = app.toObject()
       delete app.client_id
       delete app.client_secret

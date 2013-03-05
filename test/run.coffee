@@ -224,6 +224,10 @@ describe "Fannect Login", () ->
 
 
    describe "/v1/apps", () ->
+      before (done) ->
+          dbSetup.unload data_standard, () -> dbSetup.load data_standard, done
+      after (done) -> dbSetup.unload data_standard, done
+
       describe "POST", () ->
          before (done) ->
             context = @
@@ -246,6 +250,10 @@ describe "Fannect Login", () ->
            
 
    describe "/v1/apps/token", () ->
+      before (done) ->
+          dbSetup.unload data_standard, () -> dbSetup.load data_standard, done
+      after (done) -> dbSetup.unload data_standard, done
+      
       describe "POST", () ->
          before (done) ->
             context = @
