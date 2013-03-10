@@ -8,6 +8,7 @@
    },
    "private": true,
    "dependencies": {
+      "nodefly": "stable",
       "coffee-script": "1.4.0",
       "express": "3.0.1",
       "request": "2.12.0",
