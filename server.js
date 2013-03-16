@@ -4,10 +4,12 @@ Environmental variables
  - MONGO_URL
  - REDIS_URL
 */
-require("nodefly").profile(
-   "8bdbbd3e-684d-4668-aaea-77f52ac9319a",
-   ["Fannect Login","Heroku"]
-);
+if (process.env.NODE_ENV == "production") {
+   require("nodefly").profile(
+      "8bdbbd3e-684d-4668-aaea-77f52ac9319a",
+      ["Fannect Login","Heroku"]
+   );
+}
 
 require("coffee-script");
 app = require("./controllers/host.coffee");
