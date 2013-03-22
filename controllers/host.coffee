@@ -28,6 +28,7 @@ mongooseTypes.loadTypes mongoose
 # Controllers
 app.use require "./v1"
 app.use require "./twitter"
+app.use require "./instagram"
 
 app.all "*", (req, res, next) ->
    next(new ResourceNotFoundError())

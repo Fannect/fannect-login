@@ -95,11 +95,11 @@ app.get "/v1/twitter", auth.rookieStatus, (req, res, next) ->
          res.redirect("https://twitter.com/oauth/authenticate?oauth_token=#{oauth_token}")   
 
 app.get "/v1/twitter/callback/:access_token", (req, res, next) ->
-   return res.redirect "/v1/twitter/done?status='fail'" if req.query.denied
+   return res.redirect "/v1/twitter/done?status=fail" if req.query.denied
    
    auth.getUser req.params.access_token, (err, user) ->
       if err or not (user and user.oauth)
-         return res.redirect "/v1/twitter/done?status='fail'"
+         return res.redirect "/v1/twitter/done?status=fail"
       
       oa = new OAuth("https://api.twitter.com/oauth/request_token",
          "https://api.twitter.com/oauth/access_token",
@@ -114,7 +114,7 @@ app.get "/v1/twitter/callback/:access_token", (req, res, next) ->
       oa.getOAuthAccessToken user.oauth.token, user.oauth.token_secret, verifier
       , (err, oauth_access_token, oauth_access_token_secret, results) ->
          if err or not results?.user_id
-            return res.redirect "/v1/twitter/done?status='fail'"
+            return res.redirect "/v1/twitter/done?status=fail"
             
          user.twitter =
             user_id: results.user_id
