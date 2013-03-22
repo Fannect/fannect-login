@@ -28,6 +28,7 @@
       "should": "1.2.1"
    },
    "scripts": {
-      "test": "mocha --compilers coffee:coffee-script --reporter spec -t 6500 -s 150"
+      "test": "mocha --compilers coffee:coffee-script --reporter spec -t 6500 -s 150",
+      "test-common": "mocha --compilers coffee:coffee-script --reporter spec -t 10000 -s 300 ./common/test/run.coffee"
    }
 }
