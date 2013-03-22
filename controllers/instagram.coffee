@@ -9,8 +9,9 @@ NotAuthorizedError = require "../common/errors/NotAuthorizedError"
 async = require "async"
 User = require "../common/models/User"
 request = require "request"
+querystring = require "querystring"
 
-instagram_callback = process.env.INSTAGRAM_CALLBACK or "http://192.168.2.14:2200"
+instagram_callback = process.env.INSTAGRAM_CALLBACK or "http://localhost:2200"
 
 app = module.exports = express()
 
@@ -26,30 +27,32 @@ app.get "/v1/instagram/callback", (req, res, next) ->
 
    auth.getUser req.query.user_token, (err, user) ->
       if err or not user
-         res.redirect "/v1/twitter/done?status=fail"
+         return res.redirect "/v1/twitter/done?status=fail"
    
       request
          url: "https://api.instagram.com/oauth/access_token"
          method: "POST"
-         json:
+         body: querystring.stringify
             client_id: client_id
             client_secret: client_secret
             grant_type: "authorization_code"
             redirect_uri: "#{instagram_callback}/v1/instagram/callback?user_token=#{req.query.user_token}"
             code: req.query.code
       , (err, resp, body) ->
-         if err or body?.access_token
-            return res.redirect "/v1/twitter/done?status=fail"
+         if err or body.indexOf("access_token") == -1
+            return res.redirect "/v1/instagram/done?status=fail"
          
+         body = JSON.parse(body)
+
          user.instagram = body.user
          user.instagram.access_token = body.access_token
 
          async.parallel
             redis: (done) -> auth.updateUser req.query.user_token, user, done
             mongo: (done) -> User.update {_id: user._id}, { instagram: user.instagram }, done
-         , (err) ->
-            return next(new RestError(err)) if err 
-            res.redirect "/v1/twitter/done?status=success"
+         , (err, results) ->
+            return res.redirect "/v1/instagram/done?status=fail" if err
+            res.redirect "/v1/instagram/done?status=success"
 
 app.get "/v1/instagram/done", (req, res, next) ->
    if req.query?.status == "success"
