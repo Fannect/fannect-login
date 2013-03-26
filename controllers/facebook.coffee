@@ -20,22 +20,38 @@ client_secret = "551b48dfea2e4a2d9651aa6125f48b39"
 
 app.post "/v1/facebook", auth.rookieStatus, (req, res, next) ->
    return next(new InvalidArgumentError("Required: facebook_access_token"))
-   req.user.facebook = {} unless req.user.facebook
-   req.user.facebook.access_token = req.body.facebook_access_token
+   
+   # make request to get personal information from Facebook
+   request
+      url: "https://graph.facebook.com/me?access_token=#{req.body.facebook_access_token}"
+   , (err, resp, body) ->
+      return next(new RestError(err)) if err
 
-   async.parallel
-      redis: (done) -> auth.updateUser req.query.access_token, req.user, done
-      mongo: (done) -> User.update { _id: req.user._id }, { "facebook.access_token": req.body.facebook_access_token }, done
-   , (err) ->
-      return next(new MongoError(err)) if err
-      res.json status: "success"
+      body = JSON.parse(body)
+      return next(new RestError(400, body?.error?.type, body?.error?.message)) if body?.error
+            
+      req.user.facebook = true
+
+      async.parallel
+         redis: (done) -> auth.updateUser req.query.access_token, req.user, done
+         mongo: (done) -> 
+            User.update { _id: req.user._id },
+               facebook:
+                  id: body.id
+                  username: body.username
+               gender: body.gender
+               birthday: body.birthday
+            , done
+      , (err) ->
+         return next(new MongoError(err)) if err
+         res.json status: "success"
 
 deleteFacebook = (req, res, next) ->
    delete req.user.facebook
 
    async.parallel
       redis: (done) -> auth.updateUser req.query.access_token, req.user, done
-      mongo: (done) -> User.update { _id: req.user._id }, { "facebook.access_token": null }, done
+      mongo: (done) -> User.update { _id: req.user._id }, { facebook: null }, done
    , (err) ->
       return next(new MongoError(err)) if err
       res.json status: "success"
