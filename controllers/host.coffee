@@ -29,6 +29,7 @@ mongooseTypes.loadTypes mongoose
 app.use require "./v1"
 app.use require "./twitter"
 app.use require "./instagram"
+app.use require "./facebook"
 
 app.all "*", (req, res, next) ->
    next(new ResourceNotFoundError())
