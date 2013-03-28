@@ -38,7 +38,6 @@ app.post "/v1/token", (req, res, next) ->
          # Set if user has connected twitter
          user.twitter = if user.twitter?.user_id then true else false
          user.facebook = if user.facebook?.id then true else false
-
          user.access_token = access_token
          res.json user
 

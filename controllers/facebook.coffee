@@ -19,7 +19,7 @@ client_id = "622bb639e3ad4ee99fb3ba0b05c9b847"
 client_secret = "551b48dfea2e4a2d9651aa6125f48b39"
 
 app.post "/v1/facebook", auth.rookieStatus, (req, res, next) ->
-   return next(new InvalidArgumentError("Required: facebook_access_token"))
+   return next(new InvalidArgumentError("Required: facebook_access_token")) unless req.body.facebook_access_token
    
    # make request to get personal information from Facebook
    request
