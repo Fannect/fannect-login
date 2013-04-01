@@ -25,7 +25,7 @@ app.post "/v1/token", (req, res, next) ->
 
    User
    .findOne({ "email": email, "password", password })
-   .select("_id email first_name last_name refresh_token birthday gender twitter facebook invites reload_stream verified role")
+   .select("_id email first_name last_name refresh_token birthday gender twitter facebook instagram invites reload_stream verified role")
    .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
@@ -35,9 +35,11 @@ app.post "/v1/token", (req, res, next) ->
       auth.createAccessToken user, (err, access_token) ->
          return next(err) if err
          
-         # Set if user has connected twitter
+         # Set if user has connected social media
          user.twitter = if user.twitter?.user_id then true else false
          user.facebook = if user.facebook?.id then true else false
+         user.instagram = if user.instagram?.id then true else false
+         
          user.access_token = access_token
          res.json user
 
@@ -46,7 +48,7 @@ getNewAccessToken = (req, res, next) ->
    return next(new InvalidArgumentError("Required: refresh_token")) unless req.body.refresh_token
    User
    .findOne({ "refresh_token": req.body.refresh_token })
-   .select("_id email first_name last_name refresh_token birthday gender twitter facebook invites reload_stream verified role")
+   .select("_id email first_name last_name refresh_token birthday gender twitter facebook instagram invites reload_stream verified role")
    .lean()
    .exec (err, user) ->
       return next(new MongoError(err)) if err
@@ -55,10 +57,11 @@ getNewAccessToken = (req, res, next) ->
       auth.createAccessToken user, (err, access_token) ->
          return next(err) if err
          
-         # Set if user has connected twitter
+         # Set if user has connected social media
          user.twitter = if user.twitter?.user_id then true else false
          user.facebook = if user.facebook?.id then true else false
-
+         user.instagram = if user.instagram?.id then true else false
+         
          user.access_token = access_token
          res.json user
 
