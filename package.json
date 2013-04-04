@@ -20,6 +20,7 @@
       "mongoose-types": "1.0.3",
       "redis": "0.8.2",
       "sendgrid-web": "0.0.4",
+      "kaiseki": "0.4.0",
       "oauth": "0.9.8"
    },
    "devDependencies": {
