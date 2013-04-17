@@ -7,6 +7,7 @@ MongoError = require "../common/errors/MongoError"
 RedisError = require "../common/errors/RedisError"
 auth = require "../common/middleware/authenticate"
 crypt = require "../common/utils/crypt"
+WelcomeEmailJob = require "../common/jobs/WelcomeEmailJob"
 sendgrid = new (require("sendgrid-web"))({ 
    user: process.env.SENDGRID_USER or "fannect", 
    key: process.env.SENDGRID_PASSWORD or "1Billion!" 
@@ -84,6 +85,9 @@ app.post "/v1/users", (req, res, next) ->
       user = user.toObject()
       delete user.password
       delete user.__v
+
+      job = new WelcomeEmailJob({ email: user.email, first_name: user.first_name })
+      job.queue()
 
       auth.createAccessToken user, (err, access_token) ->
          return next(new MongoError(err)) if err

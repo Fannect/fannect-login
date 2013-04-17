@@ -2,7 +2,9 @@ express = require "express"
 path = require "path"
 mongoose = require "mongoose"
 mongooseTypes = require "mongoose-types"
-redis = (require "../common/utils/redis")(process.env.REDIS_URL or "redis://redistogo:f74caf74a1f7df625aa879bf817be6d1@perch.redistogo.com:9203")
+redis = require "../common/utils/redis"
+client = redis(process.env.REDIS_URL or "redis://redistogo:f74caf74a1f7df625aa879bf817be6d1@perch.redistogo.com:9203")
+queue = redis(process.env.REDIS_QUEUE_URL or "redis://redistogo:f74caf74a1f7df625aa879bf817be6d1@perch.redistogo.com:9203", "queue")
 ResourceNotFoundError = require "../common/errors/ResourceNotFoundError"
 
 app = module.exports = express()
